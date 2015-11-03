@@ -93,11 +93,11 @@ After installation type `brew info redis` to see how you can start Redis. You ca
 
 All Histograph components depend on the [histograph-config](https://github.com/histograph/config) module, which  specifies a set of (overridable) default options. However, some options must always be specified manually: histograph-config loads the default configuration from [`histograph.default.yml`](https://github.com/histograph/config/blob/master/histograph.default.yml) and merges this with a required user-specified configuration file. You can specify the location of your own configuration file in two ways:
 
-1. Start the Histograph module with the argument `--config path/to/config.yml`
+1. Start the Histograph module with the argument `--config path/to/histograph/config.yml`
 2. Set the `HISTOGRAPH_CONFIG` environment variable to the path of the configuration file:
 
 ```
-export HISTOGRAPH_CONFIG=/Users/bert/code/histograph/config/histograph.bert.yml
+export HISTOGRAPH_CONFIG=/path/to/histograph/config.yml
 ```
 
 This configuration file should at least specify the following options:
@@ -141,9 +141,15 @@ Histograph API exposes a search API, as well as an API to upload and download da
     npm install
     node index.js
 
-API can also be started with the `--config` command line argument.
+The API can also be started with the `--config` command line argument:
 
-Afterwards, the API will be available on [http://localhost:3000](http://localhost:3000).
+    node index.js --config /path/to/histograph/config.yml
+
+Or, start the API with [forever](https://github.com/foreverjs/forever):
+
+    forever start -a --uid "api" index.js --prod --config /path/to/histograph/config.yml
+
+Afterwards, the API will be available on [http://localhost:3001](http://localhost:3001).
 
 ### Download or create NDJSON files
 
