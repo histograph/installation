@@ -22,7 +22,7 @@ Afterwards, you can start Neo4j by running:
 
     neo4j start
 
-On a Debian or Ubuntu system, Neo4j can be started with the ‘service’ command:
+On a Debian or Ubuntu system, Neo4j can be started with the `service` command:
 
     sudo service neo4j-service start
 
