@@ -2,13 +2,24 @@
 
 This document explains how to install and configure all the essential components Histograph needs to run:
 
-  1. Install Neo4j
-  2. Install Elasticsearch
-  3. Install Redis
-  4. Install Histograph
-  5. Create and import data files
+  1. Install Node.js and NPM
+  2. Install Neo4j
+  3. Install Elasticsearch
+  4. Install Redis
+  5. Install Histograph
+  6. Create and import data files
 
 For setting up a production environment on Amazon Web Services, please see the [`histograph/aws`](https://github.com/histograph/aws) repository.
+
+## Node.js and NPM
+
+With Homebrew:
+
+    brew install node
+
+On a Debian or Ubuntu machine:
+
+    sudo apt-get install -y nodejs
 
 ## Neo4j
 
@@ -56,6 +67,8 @@ Install [Elasticsearch](https://www.elastic.co/downloads/elasticsearch). With Ho
 
     brew install elasticsearch
 
+After installation type `brew info elasticsearch` to see how you can start Elasticsearch. You can check if Elasticsearch is installed properly by pointing your browser to [http://localhost:9200](http://localhost:9200).
+
 ### Configuration
 
 Add the following lines to `elasticsearch.yml`:
@@ -69,6 +82,10 @@ index.analysis.analyzer.lowercase:
 ## Redis
 
 With Homebrew `brew install redis`, [redis.io](http://redis.io/download) otherwise.
+
+After installation type `brew info redis` to see how you can start Redis. You can check if Redis is installed properly by running:
+
+    redis-cli
 
 ## Histograph
 
