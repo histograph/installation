@@ -60,11 +60,11 @@ Install [Elasticsearch](https://www.elastic.co/downloads/elasticsearch). With Ho
 
 Add the following lines to `elasticsearch.yml`:
 
-{% highlight yaml %}
+```yaml
 index.analysis.analyzer.lowercase:
   filter: lowercase
   tokenizer: keyword
-{% endhighlight %}
+```
 
 ## Redis
 
@@ -79,13 +79,13 @@ All Histograph components depend on the [histograph-config](https://github.com/h
 1. Start the Histograph module with the argument `--config path/to/config.yml`
 2. Set the `HISTOGRAPH_CONFIG` environment variable to the path of the configuration file:
 
-{% highlight bash %}
+```
 export HISTOGRAPH_CONFIG=/Users/bert/code/histograph/config/histograph.bert.yml
-{% endhighlight %}
+```
 
 This configuration file should at least specify the following options:
 
-{% highlight yaml %}
+```yaml
 api:
   dataDir: /var/histograph/data   # Directory where API stores data files.
   admin:
@@ -100,7 +100,7 @@ import:
   dirs:
     - ../data                     # List of directories containing Histograph
     - ...                         # datasets - used by import tool
-{% endhighlight %}
+```
 
 Please see the [histograph-config](https://github.com/histograph/config) repository on GitHub to see the default options specified by `histograph.default.yml`.
 
