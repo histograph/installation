@@ -1,12 +1,12 @@
 class histograph::environment(
   $file = '/etc/environment',
-  $variables = [],
+  $variables = {},
 ) {
 
   file {
     $file:
       ensure => file,
-      source => template('histograph/environment.sh'),
+      content => template('histograph/environment.sh'),
   }
 
 }

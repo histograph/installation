@@ -1,31 +1,16 @@
 class histograph (
-  $home_dir = $histograph::params::home_dir,
-  $user = $histograph::params::user,
+  $data_import            = $histograph::params::data_import,
+  $data_store             = $histograph::params::data_store,
+  $elasticsearch_endpoint = $histograph::params::elasticsearch_endpoint,
+  $home_dir               = $histograph::params::home_dir,
+  $instance_conf          = $histograph::params::instance_conf ,
+  $endpoint_elasticsearch = $histograph::params::endpoint_elasticsearch,
+  $endpoint_neo4j         = $histograph::params::endpoint_neo4j,
+  $endpoint_redis         = $histograph::params::endpoint_redis,
+  $user                   = $histograph::params::user,
 ) inherits histograph::params {
 
-
-# Elastic search
-  if defined(Package['elasticsearch']) {
-    include histograph::elasticsearch
-  }
-
-# neo4j
-  if defined(Package['neo4j']) {
-    include histograph::neo4j
-  }
-
-# nodejs
-  if defined(Package['nodejs']) {
-    include histograph::nodejs
-  }
-
-  package {
-    [
-      'python-software-properties',
-    ]:
-      ensure => present,
-  }
-
+  include histograph::environment
 
   group {
     $user:
@@ -37,12 +22,30 @@ class histograph (
       managehome => true ;
   }
 
-
   file {
-    $home_dir:
+    [$home_dir, $data_import, $data_store]:
       ensure => directory,
       group  => $user,
       owner  => $user ;
+    "${home_dir}/config.yml":
+      ensure  => file,
+      content => template('histograph/config.yml.erb') ;
+  }
+
+# neo4j
+  if defined('neo4j') {
+    class {
+      'histograph::neo4j':
+        require => File["${home_dir}/config.yml"],
+    }
+  }
+
+# nodejs
+  if defined('nodejs') {
+    class {
+      'histograph::nodejs':
+        require => File["${home_dir}/config.yml"],
+    }
   }
 
 }

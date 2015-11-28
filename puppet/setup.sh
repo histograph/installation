@@ -86,6 +86,14 @@ ssl_client_verify_header = SSL_CLIENT_VERIFY" > $puppet_conf
 
     touch $FIRSTRUN
 
+    set +e
+
+    # On of these two commands is allowed to fail.
+    apt-get -y update
+    yum -y update
+
+    puppet apply /etc/puppet/manifests/sites.pp
+
     echo "I think we are done for today."
 
     exit 0

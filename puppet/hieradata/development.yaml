@@ -1,7 +1,6 @@
 ---
   classes:
     - elasticsearch
-    - environment
     - histograph
     - java
     - neo4j
@@ -12,38 +11,72 @@
   elasticsearch::repo_version: "1.7"
   elasticsearch::version: "1.7.2"
   elasticsearch::init_defaults:
-    ES_HEAP_SIZE: "4g"
-  elasticsearch::instance:
+    ES_HEAP_SIZE: "1g"
+  elasticsearch::instances:
     es-01:
       config:
         index.analysis.analyzer.lowercase:
           filter: lowercase
           tokenizer: keyword
-  environment::variables:
+  histograph::environment::variables:
     JAVA_HOME: ""
     HISTOGRAPH_HOME: "/opt/histograph"
     "export HISTOGRAPH_CONFIG": "/opt/histograph/config.yml"
-  histograph::e:
+  histograph::endpoint_neo4j: "%{::hostname}"
+  histograph::endpoint_elasticsearch: "%{::hostname}"
+  histograph::endpoint_redis: "%{::hostname}"
+  histograph::data_import: "/opt/histograph/data_import"
+  histograph::data_store: "/opt/histograph/data_store"
+  histograph::instance_conf:
     api:
-      dataDir: /opt/histograph/data/store  # Directory where API stores data files.
+      dataDir: "%{histograph::data_import}"  # Directory where API stores data files.
       admin:
-        name: histograph              # Default Histograph user, is created
-        password: histograph          # when starting API the first time.
-    neo4j:
-      user: neo4j                     # Neo4j authentication (leave empty when
-      password: neo4j                 # running Neo4j without authentication)
+        name: "histograph"              # Default Histograph user, is created
+        password: "histograph"          # when starting API the first time.
+    elasticsearch:
+      host: "%{histograph::endpoint_elasticsearch}"
     import:
       dirs:
-        - /opt/histograph/data/import
+        -  "%{histograph::data_store}"
+    neo4j:
+      host: "%{histograph::endpoint_neo4j}"
+      password: ""                 # running Neo4j without authentication)
+      user: ""                      # Neo4j authentication (leave empty when
+    redis:
+      host: "%{histograph::endpoint_redis}"
+  histograph::neo4j::homedir: "/opt/neo4j/neo4j-community-2.2.6"
   java::package: "openjdk-7-jdk"
+  neo4j::allow_remote_connections: false # That seems to be a bug in the template.
   neo4j::version: "2.2.6"
   neo4j::edition: "community"
   neo4j::install_prefix: "/opt/neo4j"
+  neo4j::properties:
+    "declare plugin":
+      line: "org.neo4j.server.thirdparty_jaxrs_classes=org.waag.histograph.plugins=/histograph"
+    "disable authentication":
+      line: "dbms.security.auth_enabled=false"
+      match: "dbms.security.auth_enabled=true"
+    "bind address":
+      line: "org.neo4j.server.webserver.address=%{::hostname}"
   nodejs::repo_url_suffix: "node_0.12"
   nodejs::npm:
-    pm2:
-      install_options: ["-g"]
-      target: "/opt"
-    core:
+    api:
+      home_dir: "/opt/histograph"
+      source: "https://github.com/histograph/api.git"
       target: "/opt/histograph"
+      user: "histograph"
+    config:
+      home_dir: "/opt/histograph"
+      source: "https://github.com/histograph/config.git"
+      target: "/opt/histograph"
+      user: "histograph"
+    core:
+      home_dir: "/opt/histograph"
+      source: "https://github.com/histograph/core.git"
+      target: "/opt/histograph"
+      user: "histograph"
+    pm2:
+      install_options: ["--global"]
+      target: "/tmp"
+  redis::bind: "%{::hostname}"
   redis::manage_repo: true
