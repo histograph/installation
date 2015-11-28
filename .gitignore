@@ -1,0 +1,18 @@
+.idea
+
+# All puppet files that the share may expose.
+puppet/puppet.conf
+puppet/environments
+puppet/files
+puppet/templates
+puppet/modules/apt
+puppet/modules/concat
+puppet/modules/elasticsearch
+puppet/modules/epel
+puppet/modules/gpg_key
+puppet/modules/java
+puppet/modules/neo4j
+puppet/modules/nodejs
+puppet/modules/redis
+puppet/modules/stdlib
+puppet/modules/wget

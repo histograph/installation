@@ -1,0 +1,49 @@
+---
+  classes:
+    - elasticsearch
+    - environment
+    - histograph
+    - java
+    - neo4j
+    - nodejs
+    - redis
+  elasticsearch::manage_repo: true
+  elasticsearch::package_pin: true
+  elasticsearch::repo_version: "1.7"
+  elasticsearch::version: "1.7.2"
+  elasticsearch::init_defaults:
+    ES_HEAP_SIZE: "4g"
+  elasticsearch::instance:
+    es-01:
+      config:
+        index.analysis.analyzer.lowercase:
+          filter: lowercase
+          tokenizer: keyword
+  environment::variables:
+    JAVA_HOME: ""
+    HISTOGRAPH_HOME: "/opt/histograph"
+    "export HISTOGRAPH_CONFIG": "/opt/histograph/config.yml"
+  histograph::e:
+    api:
+      dataDir: /opt/histograph/data/store  # Directory where API stores data files.
+      admin:
+        name: histograph              # Default Histograph user, is created
+        password: histograph          # when starting API the first time.
+    neo4j:
+      user: neo4j                     # Neo4j authentication (leave empty when
+      password: neo4j                 # running Neo4j without authentication)
+    import:
+      dirs:
+        - /opt/histograph/data/import
+  java::package: "openjdk-7-jdk"
+  neo4j::version: "2.2.6"
+  neo4j::edition: "community"
+  neo4j::install_prefix: "/opt/neo4j"
+  nodejs::repo_url_suffix: "node_0.12"
+  nodejs::npm:
+    pm2:
+      install_options: ["-g"]
+      target: "/opt"
+    core:
+      target: "/opt/histograph"
+  redis::manage_repo: true
