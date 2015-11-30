@@ -48,4 +48,11 @@ class histograph (
     }
   }
 
+#postgresql
+#if defined('postgresql::globals') {
+   class {
+    'histograph::postgresql':
+ }
+#}
+
 }

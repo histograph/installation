@@ -5,7 +5,6 @@
 # With a pinned version
 # on acceptance, development or production
 
-
 set -e
 
 
@@ -39,19 +38,22 @@ function main {
 
     puppet_conf=/etc/puppet/puppet.conf
 
-
+    # puppet repo
     echo "deb http://apt.puppetlabs.com/ precise main
     deb-src http://apt.puppetlabs.com/ precise main">/etc/apt/sources.list.d/puppet.list
-
     wget -O /tmp/pubkey.gpg http://apt.puppetlabs.com/pubkey.gpg
     gpg --import /tmp/pubkey.gpg
     gpg -a --export 4BD6EC30 | apt-key add -
+
     apt-get -y update
     if [ -f $puppet_conf ] ; then
         rm $puppet_conf
     fi
     apt-get -y install facter puppet-common=3.8.3-1puppetlabs1
-    apt-mark hold puppet-common
+    apt-get -y install python-software-properties
+    apt-get -y remove redis-server
+    apt-get -y purge redis-server
+    apt-get -y autoremove
 
 
     echo "[main]
@@ -83,16 +85,12 @@ ssl_client_verify_header = SSL_CLIENT_VERIFY" > $puppet_conf
     puppet module install maestrodev-wget
     puppet module install puppetlabs-java
     puppet module install puppet-nodejs
+    puppet module install puppetlabs-postgresql
 
-    touch $FIRSTRUN
-
-    set +e
-
-    # On of these two commands is allowed to fail.
-    apt-get -y update
-    yum -y update
 
     puppet apply /etc/puppet/manifests/sites.pp
+
+    touch $FIRSTRUN
 
     echo "I think we are done for today."
 
