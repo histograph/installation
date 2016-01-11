@@ -3,11 +3,12 @@
 This document explains how to install and configure all the essential components Histograph needs to run:
 
   1. Install Node.js and NPM
-  2. Install Neo4j
-  3. Install Elasticsearch
-  4. Install Redis
-  5. Install Histograph
-  6. Create and import data files
+  1. Install Neo4j
+  1. Install Histograph Neo4j plugin
+  1. Install Elasticsearch
+  1. Install Redis
+  1. Install Histograph
+  1. Create and import data files
 
 For setting up a production environment on Amazon Web Services, please see the [`histograph/aws`](https://github.com/histograph/aws) repository.
 
@@ -19,13 +20,27 @@ With Homebrew:
 
 On a Debian or Ubuntu machine:
 
-    sudo apt-get install -y nodejs
+    sudo apt-get install nodejs
 
 ## Neo4j
 
-### Installation
+### Installation on Debian/Ubuntu
 
-[Download and install Neo4j](http://neo4j.com/download/), or use your favorite package manager. Or Homebrew:
+On Debian or Ubuntu follow the [package install instructions](http://debian.neo4j.org/) as follows:
+    
+    wget -O - https://debian.neo4j.org/neotechnology.gpg.key | sudo apt-key add -
+    echo 'deb http://debian.neo4j.org/repo stable/' >/tmp/neo4j.list
+    sudo mv /tmp/neo4j.list /etc/apt/sources.list.d
+    sudo apt-get update
+    sudo apt-get install neo4j
+    
+The install procedure will start Neo4j. You can check if Neo4j is installed properly by going to [http://localhost:7474](http://localhost:7474).
+
+It is also necessary to manually create a unique constraint and index, by running the following query in Neo4j Cypher console (via [http://localhost:7474](http://localhost:7474)):
+
+    CREATE CONSTRAINT ON (n:_) ASSERT n.id IS UNIQUE
+
+### Installation on Mac with Homebrew
 
     brew install neo4j
 
@@ -33,45 +48,46 @@ Afterwards, you can start Neo4j by running:
 
     neo4j start
 
-On a Debian or Ubuntu system, Neo4j can be started with the `service` command:
-
-    sudo service neo4j-service start
-
 You can check if Neo4j is installed properly by going to [http://localhost:7474](http://localhost:7474).
 
 It is also necessary to manually create a unique constraint and index, by running the following query in Neo4j Cypher console (via [http://localhost:7474](http://localhost:7474)):
 
     CREATE CONSTRAINT ON (n:_) ASSERT n.id IS UNIQUE
 
-### Histograph Neo4j plugin
+## Histograph Neo4j plugin
 
 Histograph depends on a [server plugin](https://github.com/histograph/neo4j-plugin) for some of its graph queries. Before downloading and building the plugin, we need to tell Neo4j to create a `/histograph` endpoint. Open `neo4j-server.properties`, and add the following line:
 
     org.neo4j.server.thirdparty_jaxrs_classes=org.waag.histograph.plugins=/histograph
 
-Afterwards, you can install this plugin like this:
-
+### Installation on Debian/Ubuntu
     git clone https://github.com/histograph/neo4j-plugin.git
     cd neo4j-plugin
-    ./install.sh
+    ./install-debian.sh
 
-This script is for MacOS, on other systems, run `mvn package` yourself to build the Neo4j plugin, copy the resulting JAR file to Neo4j's plugin directory, and restart Neo4j.
+To verify a correct install, issue:
 
-In a Debian install, the plugin directory is located at `/usr/share/neo4j`.
+    ./test.sh
+    
+### Installation on Or on Mac with Homebrew:
+    git clone https://github.com/histograph/neo4j-plugin.git
+    cd neo4j-plugin
+    ./install-mac.sh
+
+To verify a correct install, issue:
+
+    ./test.sh
 
 ## Elasticsearch
 
-### Installation
+### Installation on Debian/Ubuntu
+Installation can be done either through [downloading](https://www.elastic.co/downloads/elasticsearch) or by way of the repository:
+    wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+    echo "deb http://packages.elastic.co/elasticsearch/2.x/debian stable main" | sudo tee -a /etc/apt/sources.list.d/elasticsearch-2.x.list
+    sudo apt-get update && sudo apt-get install elasticsearch
+    sudo service elasticsearch start
 
-Install [Elasticsearch](https://www.elastic.co/downloads/elasticsearch). With Homebrew, this is easy:
-
-    brew install elasticsearch
-
-After installation type `brew info elasticsearch` to see how you can start Elasticsearch. You can check if Elasticsearch is installed properly by pointing your browser to [http://localhost:9200](http://localhost:9200).
-
-### Configuration
-
-Add the following lines to `elasticsearch.yml`:
+Add the following lines to `elasticsearch.yml`, which can be found under ```/etc/elasticsearch/elasticsearch.yml``` if you installed elasticsearch through apt. You will need root privileges to edit it.
 
 ```yaml
 index.analysis.analyzer.lowercase:
@@ -79,10 +95,37 @@ index.analysis.analyzer.lowercase:
   tokenizer: keyword
 ```
 
+Be sure to restart Elasticsearch afterwards:
+    sudo service elasticsearch restart
+
+### Installation on Mac with Homebrew
+
+Install [Elasticsearch](https://www.elastic.co/downloads/elasticsearch). With Homebrew, this is easy:
+
+    brew install elasticsearch
+
+After installation type `brew info elasticsearch` to see how you can start Elasticsearch. You can check if Elasticsearch is installed properly by pointing your browser to [http://localhost:9200](http://localhost:9200).
+
+Add the following lines to `elasticsearch.yml`:
+```yaml
+index.analysis.analyzer.lowercase:
+  filter: lowercase
+  tokenizer: keyword
+```
+And restart Elasticsearch.
+
 ## Redis
+### Installation on Debian/Ubuntu
+Install through:
 
-With Homebrew `brew install redis`, [redis.io](http://redis.io/download) otherwise.
+    sudo apt-get install redis-server
+    
+You can check if Redis is installed properly by running:
 
+    redis-cli
+
+### Installation on Mac with Homebrew
+With Homebrew `brew install redis`
 After installation type `brew info redis` to see how you can start Redis. You can check if Redis is installed properly by running:
 
     redis-cli
@@ -107,7 +150,7 @@ api:
   dataDir: /var/histograph/data   # Directory where API stores data files.
   admin:
     name: histograph              # Default Histograph user, is created
-    password: passw🚜rd           # when starting API the first time.
+    password: password           # when starting API the first time.
 
 neo4j:
   user: neo4j                     # Neo4j authentication (leave empty when
