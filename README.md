@@ -1,6 +1,6 @@
 # Histograph Installation
 
-This document explains how to install and configure all the essential components Histograph needs to run:
+This document explains how to install __Histograph v0.5__ and configure all the essential components Histograph needs to run:
 
   1. Install Node.js and NPM
   2. Install Neo4j
@@ -8,6 +8,8 @@ This document explains how to install and configure all the essential components
   4. Install Redis
   5. Install Histograph
   6. Create and import data files
+
+Note: if you want to install the latest version instead of v0.5, you can remove the `--branch v0.5.0` command line argument for all `git clone` commands.
 
 For setting up a production environment on Amazon Web Services, please see the [`histograph/aws`](https://github.com/histograph/aws) repository.
 
@@ -51,7 +53,7 @@ Histograph depends on a [server plugin](https://github.com/histograph/neo4j-plug
 
 Afterwards, you can install this plugin like this:
 
-    git clone https://github.com/histograph/neo4j-plugin.git
+    git clone --branch v0.5.0 https://github.com/histograph/neo4j-plugin.git
     cd neo4j-plugin
     ./install.sh
 
@@ -125,7 +127,7 @@ Please see the [histograph-config](https://github.com/histograph/config) reposit
 
 Histograph Core reads messages from Redis, and syncs Neo4j and Elasticsearch.
 
-    git clone https://github.com/histograph/core.git
+    git clone --branch v0.5.0 https://github.com/histograph/core.git
     cd core
     npm install
     node index.js
@@ -136,7 +138,7 @@ You can specify the location of your configuration file by specifying its locati
 
 Histograph API exposes a search API, as well as an API to upload and download datasets. The search API reads from Elasticsearch and Neo4j; the dataset API allows users to upload datasets, reads NDJSON files and writes messages to the Redis queue.
 
-    git clone https://github.com/histograph/api.git
+    git clone --branch v0.5.0 https://github.com/histograph/api.git
     cd api
     npm install
     node index.js
@@ -184,7 +186,7 @@ For example, the GeoNames dataset looks like this:
 
 To download and install histograph-import, do the following:
 
-    npm install -g histograph-import
+    npm install -g histograph-import@0.5.0
 
 Without specifying one or more datasets as command line arguments, running `histograph-import` will list all available datasets.
 
